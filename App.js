@@ -1,5 +1,13 @@
-import React, {useState} from 'react';
-import {View, Text, TextInput, StyleSheet, Button} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Button,
+  FlatList,
+} from 'react-native';
+import UserListItem from './src/componets/User/UserListitem';
 
 const styles = StyleSheet.create({
   input: {
@@ -12,6 +20,19 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 25,
     textAlign: 'center',
+  },
+
+  header: {
+    fontSize: 20,
+    textAlign: 'center',
+    padding: 2,
+    margin : 20,
+  },
+  separador: {
+    height: 1,
+    width: "86%",
+    backgroundColor: "#CED0CE",
+    marginLeft: "14%"
   },
 });
 
@@ -32,16 +53,27 @@ const onSubmit = (accountNumber, phone, hobby, favoriteFood, bornCity) => {
     },
   })
     .then(res => res.json())
-    .then(response => console.log('Success:', response))
+    .then(response => alert('Infromacion actualiazda'))
     .catch(error => console.error('Error:', error));
 };
 
 const App = () => {
+  const [users,setUser] = useState([]);
   const [accountNumber, setAccountNumber] = useState();
   const [phone, setPhone] = useState();
   const [hobby, setHobby] = useState('');
   const [favoriteFood, setFavoriteFood] = useState('');
   const [bornCity, setBornCity] = useState('');
+  //UseEffect consulta API
+  useEffect(() =>{
+    const request = async () => {
+      const resp = await fetch("https://calculadora-server.herokuapp.com/alumns");
+      const data = await resp.json();
+      console.log(data)
+      setUser(data);
+  };
+  request()
+  },[]);
   return (
     <View>
       <Text style={styles.title}>Formulario</Text>
@@ -92,6 +124,13 @@ const App = () => {
         onPress={() => {
           onSubmit(accountNumber, phone, hobby, favoriteFood, bornCity);
         }}
+      />
+      <FlatList 
+        data={users}
+        renderItem={({item}) => <UserListItem user={item}/>}
+        keyExtractor={item => item._id}
+        ListHeaderComponent = {() => <Text style={styles.header}>Lista de usuarios</Text>}
+        ItemSeparatorComponent = {() => <View style={styles.separador}></View>}
       />
     </View>
   );
