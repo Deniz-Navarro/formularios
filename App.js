@@ -75,7 +75,7 @@ const App = () => {
   request()
   },[]);
   return (
-    <View>
+    <View style={{height: "100%"}}>
       <Text style={styles.title}>Formulario</Text>
       <TextInput
         style={styles.input}
